@@ -20,7 +20,6 @@ class AdaptedSqlServerProcessor extends SqlServerProcessor
      * expose lowercase attributes even when the driver returns the legacy
      * UPPERCASE column names.
      *
-     * @param  \Illuminate\Database\Query\Builder  $query
      * @param  array  $results
      * @return array
      */

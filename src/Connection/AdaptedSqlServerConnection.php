@@ -16,7 +16,7 @@ class AdaptedSqlServerConnection extends SqlServerConnection
     public function getIdentifierResolver(): IdentifierResolver
     {
         if ($this->identifierResolver === null) {
-            /** @var class-string<\Basedon\MssqlCaseAdapter\Resolvers\IdentifierResolver>|\Basedon\MssqlCaseAdapter\Resolvers\IdentifierResolver $resolver */
+            /** @var class-string<IdentifierResolver>|IdentifierResolver $resolver */
             $resolver = $this->getConfig('identifier_resolver') ?? UppercaseResolver::class;
 
             $this->identifierResolver = $resolver instanceof IdentifierResolver
@@ -27,25 +27,16 @@ class AdaptedSqlServerConnection extends SqlServerConnection
         return $this->identifierResolver;
     }
 
-    /**
-     * @return \Basedon\MssqlCaseAdapter\Grammar\AdaptedSqlServerQueryGrammar
-     */
     protected function getDefaultQueryGrammar()
     {
         return new AdaptedSqlServerQueryGrammar($this, $this->getIdentifierResolver());
     }
 
-    /**
-     * @return \Basedon\MssqlCaseAdapter\Grammar\AdaptedSqlServerSchemaGrammar
-     */
     protected function getDefaultSchemaGrammar()
     {
         return new AdaptedSqlServerSchemaGrammar($this, $this->getIdentifierResolver());
     }
 
-    /**
-     * @return \Basedon\MssqlCaseAdapter\Processor\AdaptedSqlServerProcessor
-     */
     protected function getDefaultPostProcessor()
     {
         return new AdaptedSqlServerProcessor(

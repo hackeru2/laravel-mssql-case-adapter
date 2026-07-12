@@ -15,9 +15,6 @@ class AdaptedSqlServerConnector extends SqlServerConnector
      * Merge PDO::ATTR_CASE => PDO::CASE_LOWER into the connection options
      * so fetched column keys are lowercased at the driver level. An
      * explicit PDO::ATTR_CASE in the connection's 'options' array wins.
-     *
-     * @param  array  $config
-     * @return array
      */
     public function getOptions(array $config)
     {
