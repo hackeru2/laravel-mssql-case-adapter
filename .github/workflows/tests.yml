@@ -1,0 +1,96 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit:
+    name: Unit & Feature (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Run unit and feature tests
+        run: vendor/bin/pest
+
+  integration:
+    name: MSSQL Integration
+    runs-on: ubuntu-latest
+    services:
+      mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: 'Y'
+          MSSQL_SA_PASSWORD: 'P@ssw0rd!Legacy1'
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd!Legacy1' -C -Q 'SELECT 1' -b"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+          --health-start-period 30s
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: sqlsrv, pdo_sqlsrv
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Create legacy databases and uppercase schema
+        run: |
+          docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd!Legacy1' -C -b \
+            -Q "CREATE DATABASE LEGACY_CI; CREATE DATABASE LEGACY_CS COLLATE Latin1_General_BIN;"
+          docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd!Legacy1' -C -b -d LEGACY_CI \
+            -Q "CREATE TABLE SITES (SITE_ID INT IDENTITY PRIMARY KEY, SITE_NAME NVARCHAR(100) NOT NULL); CREATE TABLE USERS (USER_ID INT IDENTITY PRIMARY KEY, USER_NAME NVARCHAR(100) NULL, SITE_ID INT NULL);"
+          docker exec ${{ job.services.mssql.id }} /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'P@ssw0rd!Legacy1' -C -b -d LEGACY_CS \
+            -Q "CREATE TABLE SITES (SITE_ID INT IDENTITY PRIMARY KEY, SITE_NAME NVARCHAR(100) NOT NULL); CREATE TABLE USERS (USER_ID INT IDENTITY PRIMARY KEY, USER_NAME NVARCHAR(100) NULL, SITE_ID INT NULL);"
+
+      - name: Run integration tests
+        run: vendor/bin/pest --testsuite Integration
+        env:
+          MSSQL_INTEGRATION: '1'
+          DB_MSSQL_HOST: 127.0.0.1
+          DB_MSSQL_PORT: '1433'
+          DB_MSSQL_USERNAME: sa
+          DB_MSSQL_PASSWORD: 'P@ssw0rd!Legacy1'
+          DB_MSSQL_DATABASE: LEGACY_CI
+          DB_MSSQL_DATABASE_CS: LEGACY_CS
+
+  quality:
+    name: Pint & Larastan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          coverage: none
+
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction --no-progress
+
+      - name: Check code style
+        run: vendor/bin/pint --test
+
+      - name: Run static analysis
+        run: vendor/bin/phpstan analyse --no-progress

@@ -1,0 +1,55 @@
+{
+    "name": "basedon/laravel-mssql-case-adapter",
+    "description": "Transparent snake_case to UPPERCASE identifier mapping for legacy SQL Server databases in Laravel.",
+    "keywords": ["laravel", "mssql", "sql-server", "legacy", "eloquent", "case-mapping"],
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Amir Lifshitz",
+            "email": "amir1004@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "illuminate/console": "^12.0|^13.0",
+        "illuminate/database": "^12.0|^13.0",
+        "illuminate/support": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0|^4.0",
+        "laravel/pint": "^1.13",
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.7|^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Basedon\\MssqlCaseAdapter\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Basedon\\MssqlCaseAdapter\\MssqlCaseAdapterServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "analyse": "phpstan analyse",
+        "format": "pint"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
