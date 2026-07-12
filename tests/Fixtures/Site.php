@@ -16,6 +16,10 @@ class Site extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'site_id' => 'integer',
+    ];
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'site_id', 'site_id');

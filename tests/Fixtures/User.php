@@ -15,6 +15,11 @@ class User extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'site_id' => 'integer',
+    ];
+
     public function site(): BelongsTo
     {
         return $this->belongsTo(Site::class, 'site_id', 'site_id');

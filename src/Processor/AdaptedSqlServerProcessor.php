@@ -12,8 +12,7 @@ class AdaptedSqlServerProcessor extends SqlServerProcessor
     public function __construct(
         protected IdentifierResolver $resolver,
         protected bool $normalizeResults = true,
-    ) {
-    }
+    ) {}
 
     /**
      * Map every result key to its application-side form so hydrated models

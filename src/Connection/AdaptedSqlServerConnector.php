@@ -7,9 +7,7 @@ use PDO;
 
 class AdaptedSqlServerConnector extends SqlServerConnector
 {
-    public function __construct(protected bool $defaultCaseLower = true)
-    {
-    }
+    public function __construct(protected bool $defaultCaseLower = true) {}
 
     /**
      * Merge PDO::ATTR_CASE => PDO::CASE_LOWER into the connection options
