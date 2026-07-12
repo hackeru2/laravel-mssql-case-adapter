@@ -21,6 +21,8 @@ Site::with('user')->where('site_name', 'HQ')->get();
 // → models hydrate with lowercase attributes: $site->site_name, $site->user->user_id
 ```
 
+> **Live demo:** see [hackeru2/legacy-mssql-demo-app](https://github.com/hackeru2/legacy-mssql-demo-app) — a full Laravel 13 JSON API (relations, pivots, nested eager loading) running against an UPPERCASE SQL Server schema, CI-tested on both default and case-sensitive collations.
+
 ## Installation
 
 ```bash
